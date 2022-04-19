@@ -1,6 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -9,16 +8,13 @@ export class AuthenticationService {
 
     login(email: string, password: string) {
         const token: string = this.generateToken();
-        return this.http.post<any>(`http://127.0.0.1:8000/api/login`, { email, password, token })
-            .pipe(map(user => {
-                return user;
-            }));
+        return this.http.post<any>(`http://127.0.0.1:8000/api/login`, { email, password, token }).toPromise();
     }
 
-    private generateToken(): string {
+    generateToken(): string {
         const dateNow: Date = new Date();
-        const hour: string = dateNow.getHours().toPrecision(2);
-        const minutes: string = dateNow.getMinutes().toPrecision(2);
+        const hour: string = dateNow.getHours().toPrecision(2).replace('.', '');
+        const minutes: string = dateNow.getMinutes().toPrecision(2).replace('.', '');
         return `${hour}${minutes}`;
     }
 }

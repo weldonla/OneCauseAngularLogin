@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
   // convenience getter for easy access to form fields
   get f() { return this.loginForm.controls; }
 
-  onSubmit() {
+  async onSubmit() {
     this.submitted = true;
 
     this.alertService.clear();
@@ -42,16 +42,13 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true;
-    this.authenticationService.login(this.f['username'].value, this.f['password'].value)
-      .pipe(first())
-      .subscribe(
-        data => {
-          window.location.href = "http://www.onecause.com/";
-        },
-        error => {
-          console.log(error);
-          this.alertService.error(error.error.message);
-          this.loading = false;
-        });
+    try {
+      await this.authenticationService.login(this.f['username'].value, this.f['password'].value);
+      window.location.href = "http://www.onecause.com/";
+    } catch (error: any) {
+      this.alertService.error(error.error.message);
+    } finally {
+      this.loading = false;
+    }
   }
 }
